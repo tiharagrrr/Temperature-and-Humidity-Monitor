@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="refresh" content="{UPDATE_INTERVAL}" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+            rel="stylesheet"
+        />
+        <title>BME280 Sensor Dashboard</title>
+        <style>
+            :root {
+                --bg: #f6f8fb;
+                --card: #ffffff;
+                --muted: #6b7280;
+                --accent: #2563eb;
+                --accent-2: #06b6d4;
+                --low: #0ea5e9;
+                --normal: #16a34a;
+                --high: #dc2626;
+                --radius: 2px;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                font-family: "Plus Jakarta Sans", system-ui;
+                background: linear-gradient(180deg, var(--bg), #eef2f7 80%);
+                padding: 28px;
+                display: flex;
+                justify-content: center;
+            }
+
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .logo {
+                width: 48px;
+                height: 44px;
+                border-radius: 10px;
+                background: linear-gradient(
+                    135deg,
+                    var(--accent),
+                    var(--accent-2)
+                );
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: 700;
+                font-size: 20px;
+                box-shadow: 0 6px 20px rgba(37, 99, 235, 0.18);
+            }
+
+            .wrap {
+                width: min(980px, 96%);
+            }
+
+            .section-title {
+                font-size: 16px;
+                font-weight: 600;
+                margin: 28px 0 12px;
+            }
+
+            .header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                margin-bottom: 18px;
+            }
+
+            .grid-3 {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+
+            .grid-4 {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+            }
+
+            .card {
+                background: var(--card);
+                padding: 18px;
+                border-radius: var(--radius);
+                box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+            }
+
+            .metric-label {
+                font-size: 11px;
+                color: var(--muted);
+                font-family: "Geist Mono", monospace;
+            }
+
+            h1 {
+                font-size: 16px;
+                margin: 0;
+            }
+
+            .metric-value {
+                font-size: 15px;
+                font-weight: 400;
+                margin-top: 6px;
+                font-family: "Geist Mono", monospace;
+            }
+
+            .status-bar {
+                display: flex;
+                justify-content: space-around;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 15px;
+            }
+
+            .status-item {
+                background: #f8f9fa;
+                padding: 8px 15px;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+
+            .status-item strong {
+                font-family: "Plus Jakarta Sans", system-ui;
+            }
+
+            .status-item span {
+                font-family: "Geist Mono", monospace;
+            }
+
+            .badge {
+                display: inline-block;
+                font-size: 11px;
+                padding: 4px 8px;
+                border-radius: 20px;
+                margin-top: 8px;
+                color: white;
+                font-family: "Geist Mono", monospace;
+            }
+
+            .sub {
+                color: var(--muted);
+                font-size: 12px;
+            }
+
+            .wide {
+                grid-column: 1 / -1;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .muted {
+                color: var(--muted);
+                font-size: 13px;
+            }
+
+            .footer {
+                text-align: right;
+                color: var(--muted);
+                font-size: 14px;
+            }
+
+            .low {
+                background: var(--low);
+            }
+
+            .normal {
+                background: var(--normal);
+            }
+
+            .high {
+                background: var(--high);
+            }
+
+            @media (max-width: 900px) {
+                .grid-4 {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+            @media (max-width: 800px) {
+                .grid-4 {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <div class="header">
+                <div class="brand">
+                    <div class="logo">IoT</div>
+                    <div>
+                        <h1>BME280 Environmental Monitoring Station</h1>
+                        <div class="sub">
+                            Real-time sensor data from Raspberry Pi Pico W for
+                            temperature, humidity & pressure
+                        </div>
+                    </div>
+                </div>
+                <div class="status-pill muted">
+                    Student ID:<strong
+                        style="color: var(--accent); margin-left: 8px"
+                        >w1953194</strong
+                    >
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <div class="status-item">
+                    <strong>Status:</strong>
+                    <span style="color: #52be80">● Online</span>
+                </div>
+                <div class="status-item">
+                    <strong>Uptime:</strong> {uptime // 3600}h {(uptime % 3600)
+                    // 60}m {uptime % 60}s
+                </div>
+                <div class="status-item">
+                    <strong>Readings:</strong> {self.readings_count}
+                </div>
+                <div class="status-item">
+                    <strong>WiFi Signal:</strong> {signal} dBm
+                </div>
+                <div class="status-item">
+                    <strong>Auto-refresh:</strong> {UPDATE_INTERVAL}s
+                </div>
+            </div>
+
+            <div class="section-title">Current Data</div>
+
+            <div class="grid-3">
+                <div class="card">
+                    <div class="metric-label">Temperature</div>
+                    <div class="metric-value">{temp:.1f} °C</div>
+                    <span class="badge" style="background: &quot;5dade2&quot;"
+                        >{temp_status}</span
+                    >
+                </div>
+
+                <div class="card">
+                    <div class="metric-label">Humidity</div>
+                    <div class="metric-value">{hum:.1f} %</div>
+                    <span class="badge" style="background: #3498db">
+                        {'OPTIMAL' if 30 <= hum <= 60 else 'OUTSIDE COMFORT
+                        RANGE'}
+                    </span>
+                </div>
+
+                <div class="card">
+                    <div class="metric-label">Pressure</div>
+                    <div class="metric-value">{press:.1f} hPa</div>
+                    <span class="badge" style="background: #9b59b6">
+                        {'HIGH' if press > 1013 else 'LOW' if press < 1013 else
+                        'NORMAL'}
+                    </span>
+                </div>
+            </div>
+
+            <!-- ADDITIONAL METRICS -->
+            <div class="section-title">Additional Metrics</div>
+
+            <div class="grid-4">
+                <div class="card">
+                    <div class="metric-label">Heat Index</div>
+                    <div class="metric-value">{heat_index:.1f} °C</div>
+                </div>
+
+                <div class="card">
+                    <div class="metric-label">Max Temperature</div>
+                    <div class="metric-value">{self.max_temp:.1f} °C</div>
+                </div>
+
+                <div class="card">
+                    <div class="metric-label">Min Temperature</div>
+                    <div class="metric-value">{self.min_temp:.1f} °C</div>
+                </div>
+
+                <div class="card">
+                    <div class="metric-label">Temperature Range</div>
+                    <div class="metric-value">
+                        {(self.max_temp - self.min_temp):.1f} °C
+                    </div>
+                </div>
+            </div>
+            <div style="height: 18px"></div>
+            <p>
+                Last updated:
+                {time.localtime()[3]:02d}:{time.localtime()[4]:02d}:{time.localtime()[5]:02d}
+            </p>
+            <div class="footer">
+                6NTCM009C: Internet of Things Coursework - Tihara Egodage
+            </div>
+        </div>
+    </body>
+</html>
